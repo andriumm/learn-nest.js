@@ -13,19 +13,24 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateCatDto, UpdateCatDto } from './dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 @Controller('cats') // This is the required decorator to define a controller. 'cats' is the base route for this controller /cats
 export class CatsController {
+  constructor(private catsService: CatsService) {}
   @Post() // This is a POST route handler.
   @Header('Cache-Control', 'none') // To specify a custom response header
   @HttpCode(204) // To specify a custom status code
-  create(@Body() createCatDto: CreateCatDto): string {
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
     return 'This action adds a new cat';
   }
 
   @Get() // This is a decorator to define a route handler. In this case the route to get the cats is /cats.
-  findAll(@Req() request: Request): string {
+  async findAll(@Req() request: Request): Promise<Cat[]> {
     // The @Req() decorator is used to inject the Request object into the handler because sometimes we need to access to the request details.
-    return 'This action returns all cats';
+    // 'This action returns all cats';
+    return this.catsService.findAll();
   } // or it could be like:
 
   @Get()
